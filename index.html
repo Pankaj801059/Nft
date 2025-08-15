@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Walmies Freemint</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Press Start 2P', cursive;
+    }
+    body {
+      background: linear-gradient(to bottom, #38c0c1 0%, #7be0dd 100%);
+      color: #fff;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    .navbar {
+      background: transparent;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar .logo {
+      display: flex;
+      align-items: center;
+    }
+    .navbar .logo img {
+      height: 50px;
+      margin-right: 10px;
+    }
+    .navbar nav a {
+      margin: 0 10px;
+      text-decoration: none;
+      color: #fff;
+      transition: color 0.3s;
+    }
+    .navbar nav a:hover {
+      color: #ffd700;
+    }
+    .btn-yellow {
+      background: #ffd700;
+      color: black;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn-yellow:hover {
+      background: #ffc107;
+      transform: scale(1.05);
+    }
+    .main {
+      padding: 30px;
+    }
+    .card {
+      background: #fff3cd;
+      padding: 20px;
+      border-radius: 15px;
+      border: 4px solid #3d3d3d;
+      display: inline-block;
+      margin: 20px;
+      color: #000;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+    }
+    .social-buttons button, .social-buttons a {
+      display: block;
+      margin: 10px auto;
+      padding: 12px;
+      background: #f9e79f;
+      border: 2px solid #3d3d3d;
+      cursor: pointer;
+      color: black;
+      width: 220px;
+      font-size: 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .social-buttons button:hover, .social-buttons a:hover {
+      background: #f7d358;
+      transform: scale(1.03);
+    }
+    .wallet-address {
+      margin-top: 10px;
+      font-size: 10px;
+      color: #222;
+      background: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+    .clouds {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 300px;
+      background: url('https://i.imgur.com/Ns6TjvU.png') no-repeat center;
+      background-size: contain;
+      animation: floatClouds 10s ease-in-out infinite;
+    }
+    @keyframes floatClouds {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
+</head>
+<body>
+  <div class="navbar">
+    <div class="logo">
+      <img src="nft.jpg" alt="Walmies Logo">
+      <strong>Walmies Freemint</strong>
+    </div>
+    <nav>
+      <a href="#">About us</a>
+      <div>
+        <button id="walletBtn" class="btn-yellow" onclick="toggleWallet()">Connect Wallet</button>
+        <div id="walletAddress" class="wallet-address" style="display: none;"></div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="main">
+    <div class="card">
+      <img src="nft.jpg" alt="Walmie Character" width="150" /><br><br>
+      <div><strong id="speedText">Speed: 83,127⚡/day</strong></div>
+      <p><strong>Early Access</strong></p>
+    </div>
+
+    <div class="card">
+      <h3>Freemint Whitelist</h3>
+      <p>Only 5,555 Walmies — earn <strong>$50+/day</strong></p>
+      <p>Participated Users: <strong>403,836</strong></p>
+
+      <div class="social-buttons">
+        <button class="btn-yellow">✅ Follow our X</button>
+        <button class="btn-yellow">✅ Repost this tweet</button>
+        <a href="#" target="_blank" class="btn-yellow">🔗 Join Our Telegram</a>
+        <button class="btn-yellow" onclick="toggleWallet()">Connect Wallet</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="clouds"></div>
+
+  <script>
+    let connected = false;
+
+    async function toggleWallet() {
+      const button = document.getElementById('walletBtn');
+      const addressDiv = document.getElementById('walletAddress');
+
+      if (!connected) {
+        if (typeof window.ethereum !== 'undefined') {
+          try {
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            await provider.send('eth_requestAccounts', []);
+            const signer = provider.getSigner();
+            const address = await signer.getAddress();
+            button.textContent = 'Connected';
+            button.style.backgroundColor = '#b0ffc4';
+            button.style.color = '#333';
+            addressDiv.textContent = address;
+            addressDiv.style.display = 'block';
+            connected = true;
+          } catch (error) {
+            console.error('Connection error:', error);
+            alert('Failed to connect to MetaMask.');
+          }
+        } else {
+          alert('MetaMask not detected. Please install it to use this feature.');
+        }
+      } else {
+        const confirmDisconnect = confirm('Do you want to disconnect your wallet?');
+        if (confirmDisconnect) {
+          button.textContent = 'Connect Wallet';
+          button.style.backgroundColor = '#ffd700';
+          button.style.color = 'black';
+          addressDiv.textContent = '';
+          addressDiv.style.display = 'none';
+          connected = false;
+        }
+      }
+    }
+
+    function updateSpeed() {
+      const speedText = document.getElementById('speedText');
+      const randomSpeed = Math.floor(Math.random() * (87000 - 83000 + 1)) + 83000;
+      speedText.innerHTML = `Speed: ${randomSpeed.toLocaleString()}⚡/day`;
+    }
+    updateSpeed();
+    setInterval(updateSpeed, 5000);
+  </script>
+</body>
+</html>
